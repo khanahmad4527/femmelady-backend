@@ -1,0 +1,124 @@
+version: "3"
+services:
+  cache:
+    image: redis:6
+    healthcheck:
+      test: ["CMD-SHELL", "[ $$(redis-cli ping) = 'PONG' ]"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_interval: 5s
+      start_period: 30s
+
+  directus:
+    build:
+      context: ./
+    ports:
+      - 8055:8055
+    volumes:
+      - ./uploads:/directus/uploads
+      - ./extensions:/directus/extensions
+      - /var/run/postgresql/:/var/run/postgresql/
+    depends_on:
+      cache:
+        condition: service_healthy
+    environment:
+      DB_CLIENT: "pg"
+      DB_HOST: "/var/run/postgresql/"
+      DB_PORT: "5432"
+      DB_DATABASE: ${UNTHAA_DB_DATABASE}
+      DB_USER: ${UNTHAA_DB_USER}
+      DB_PASSWORD: ${UNTHAA_DB_PASSWORD}
+
+      CACHE_ENABLED: "false"
+      CACHE_AUTO_PURGE: "false"
+      CACHE_STORE: "redis"
+      REDIS: "redis://cache:6379"
+
+      WEBSOCKETS_ENABLED: "true"
+      WEBSOCKETS_HEARTBEAT_ENABLED: "true"
+      WEBSOCKETS_HEARTBEAT_PERIOD: 30
+
+      # # Enable Cloudflare R2 as the storage location for Directus
+      STORAGE_LOCATIONS: "r2"
+
+      # # Cloudflare R2 config
+      # STORAGE_R2_DRIVER: "s3"
+      # STORAGE_R2_KEY: "a1f4d2fef70ce936891c773b53f79826"
+      # STORAGE_R2_SECRET: "ee6dafcdefbc765e28f9c845f19d322251c7b17c61c101a8d6123150e971b08"
+      # STORAGE_R2_BUCKET: "directus"
+      # STORAGE_R2_REGION: "auto"
+      # STORAGE_R2_ENDPOINT: "https://9909b3abb2b8d52b575e76ad2ff0b7c7.r2.cloudflarestorage.com"
+
+      AUTH_PROVIDERS: "google"
+      AUTH_GOOGLE_DRIVER: "openid"
+      # AUTH_GOOGLE_CLIENT_ID: "XXXX" # Replace XXXX with the Client ID from Step 6
+      # AUTH_GOOGLE_CLIENT_SECRET: "XXXX" # Replace XXXX with the Client Secret from Step 6
+      AUTH_GOOGLE_ISSUER_URL: "https://accounts.google.com"
+      AUTH_GOOGLE_IDENTIFIER_KEY: "email"
+      AUTH_GOOGLE_ICON: "google"
+      AUTH_GOOGLE_LABEL: "Google"
+      AUTH_GOOGLE_ALLOW_PUBLIC_REGISTRATION: "true" # This allows users to be automatically created on logins. Use "false" if you want to create users manually
+      AUTH_GOOGLE_DEFAULT_ROLE_ID: "fcf32d7e-7212-4aca-8970-0baca4a64544" # Replace this with the Directus Role ID you would want for new users. If this is not properly configured, new users will not have access to Directus
+      AUTH_GOOGLE_REDIRECT_ALLOW_LIST: ${AUTH_GOOGLE_REDIRECT_ALLOW_LIST}
+
+      PUBLIC_URL: "https://admin-unthaa.teicneo.com" #https://admin-unthaa.teicneo.com # Public url must be provided for the sso to work
+
+      # This is to be use in production ⬇️⬇️⬇️
+
+      AUTH_GOOGLE_MODE: "cookie"
+      REFRESH_TOKEN_COOKIE_DOMAIN: "teicneo.com" # Replace XXXX with the domain of your Directus instance. For example "directus.myserver.com"
+      REFRESH_TOKEN_COOKIE_SECURE: "true"
+      REFRESH_TOKEN_COOKIE_SAME_SITE: "None"
+
+      # This is to be use in development ⬇️⬇️⬇️
+
+      # AUTH_GOOGLE_MODE: "cookie"
+      # REFRESH_TOKEN_COOKIE_SECURE: "false"
+      # REFRESH_TOKEN_COOKIE_SAME_SITE: "lax"
+
+      AUTH_GOOGLE_CLIENT_ID: ${UNTHAA_AUTH_GOOGLE_CLIENT_ID}
+      AUTH_GOOGLE_CLIENT_SECRET: ${UNTHAA_AUTH_GOOGLE_CLIENT_SECRET}
+      SECRET: ${UNTHAA_SECRET}
+      KEY: ${UNTHAA_KEY}
+      ADMIN_EMAIL: ${UNTHAA_ADMIN_EMAIL}
+      ADMIN_PASSWORD: ${UNTHAA_ADMIN_PASSWORD}
+      STORAGE_R2_DRIVER: ${UNTHAA_STORAGE_R2_DRIVER}
+      STORAGE_R2_KEY: ${UNTHAA_STORAGE_R2_KEY}
+      STORAGE_R2_SECRET: ${UNTHAA_STORAGE_R2_SECRET}
+      STORAGE_R2_BUCKET: ${UNTHAA_STORAGE_R2_BUCKET}
+      STORAGE_R2_REGION: ${UNTHAA_STORAGE_R2_REGION}
+      STORAGE_R2_ENDPOINT: ${UNTHAA_STORAGE_R2_ENDPOINT}
+
+      EMAIL_VERIFY_SETUP: "true"
+      EMAIL_FROM: "no-reply@femmelady.store"
+      EMAIL_TRANSPORT: "smtp"
+
+      EMAIL_SMTP_HOST: "smtp-relay.brevo.com"
+      EMAIL_SMTP_PORT: 587
+      EMAIL_SMTP_USER: "878909001@smtp-brevo.com"
+      EMAIL_SMTP_PASSWORD: "xsmtpsib-940aaab7452464328969ea69ffc5b6eda50bd0e62503df3b762fffd1438c13ee-XxBf235vpAtRhzCn"
+      EMAIL_SMTP_POOL: "true"
+      EMAIL_SMTP_SECURE: "false"
+      EMAIL_SMTP_IGNORE_TLS: "false"
+      EMAIL_SMTP_NAME: "femmelady.store"
+      USER_REGISTER_URL_ALLOW_LIST: ${USER_REGISTER_URL_ALLOW_LIST}
+#      PASSWORD_RESET_URL_ALLOW_LIST: ${PASSWORD_RESET_URL_ALLOW_LIST}
+
+  redis-auth:
+    image: redis:7-alpine
+    container_name: redis_session
+    restart: unless-stopped
+    command: >
+      redis-server 
+      --requirepass ${UNTHAA_REDIS_PASSWORD} 
+      --maxmemory 256mb 
+      --maxmemory-policy allkeys-lru 
+      --appendonly yes
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
