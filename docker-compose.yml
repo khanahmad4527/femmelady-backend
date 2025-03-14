@@ -67,7 +67,7 @@ services:
       # This is to be use in production ⬇️⬇️⬇️
 
       AUTH_GOOGLE_MODE: "cookie"
-      REFRESH_TOKEN_COOKIE_DOMAIN: ".femmelady.store" # Replace XXXX with the domain of your Directus instance. For example "directus.myserver.com"
+      REFRESH_TOKEN_COOKIE_DOMAIN: "femmelady.store" # Replace XXXX with the domain of your Directus instance. For example "directus.myserver.com"
       REFRESH_TOKEN_COOKIE_SECURE: "true"
       REFRESH_TOKEN_COOKIE_SAME_SITE: "None"
 
@@ -76,6 +76,9 @@ services:
       # AUTH_GOOGLE_MODE: "cookie"
       # REFRESH_TOKEN_COOKIE_SECURE: "false"
       # REFRESH_TOKEN_COOKIE_SAME_SITE: "lax"
+
+      CORS_ENABLED: "true"
+      CORS_ORIGIN: "https://femmelady.store"
 
       AUTH_GOOGLE_CLIENT_ID: ${UNTHAA_AUTH_GOOGLE_CLIENT_ID}
       AUTH_GOOGLE_CLIENT_SECRET: ${UNTHAA_AUTH_GOOGLE_CLIENT_SECRET}
