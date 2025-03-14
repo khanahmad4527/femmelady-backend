@@ -67,7 +67,7 @@ services:
       # This is to be use in production ⬇️⬇️⬇️
 
       AUTH_GOOGLE_MODE: "cookie"
-      REFRESH_TOKEN_COOKIE_DOMAIN: "teicneo.com" # Replace XXXX with the domain of your Directus instance. For example "directus.myserver.com"
+      REFRESH_TOKEN_COOKIE_DOMAIN: ".femmelady.store" # Replace XXXX with the domain of your Directus instance. For example "directus.myserver.com"
       REFRESH_TOKEN_COOKIE_SECURE: "true"
       REFRESH_TOKEN_COOKIE_SAME_SITE: "None"
 
