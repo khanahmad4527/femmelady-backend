@@ -30,8 +30,8 @@ services:
       DB_USER: ${UNTHAA_DB_USER}
       DB_PASSWORD: ${UNTHAA_DB_PASSWORD}
 
-      CACHE_ENABLED: "false"
-      CACHE_AUTO_PURGE: "false"
+      CACHE_ENABLED: "true"
+      CACHE_AUTO_PURGE: "true"
       CACHE_STORE: "redis"
       REDIS: "redis://cache:6379"
 
