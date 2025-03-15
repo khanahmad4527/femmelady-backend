@@ -62,7 +62,7 @@ services:
       AUTH_GOOGLE_DEFAULT_ROLE_ID: "fcf32d7e-7212-4aca-8970-0baca4a64544" # Replace this with the Directus Role ID you would want for new users. If this is not properly configured, new users will not have access to Directus
       AUTH_GOOGLE_REDIRECT_ALLOW_LIST: ${AUTH_GOOGLE_REDIRECT_ALLOW_LIST}
 
-      PUBLIC_URL: "https://admin-unthaa.teicneo.com" #https://admin-unthaa.teicneo.com # Public url must be provided for the sso to work
+      PUBLIC_URL: "https://admin.femmelady.store" #https://admin-unthaa.teicneo.com # Public url must be provided for the sso to work
 
       # This is to be use in production ⬇️⬇️⬇️
 
@@ -76,9 +76,6 @@ services:
       # AUTH_GOOGLE_MODE: "cookie"
       # REFRESH_TOKEN_COOKIE_SECURE: "false"
       # REFRESH_TOKEN_COOKIE_SAME_SITE: "lax"
-
-      CORS_ENABLED: "true"
-      CORS_ORIGIN: "https://femmelady.store"
 
       AUTH_GOOGLE_CLIENT_ID: ${UNTHAA_AUTH_GOOGLE_CLIENT_ID}
       AUTH_GOOGLE_CLIENT_SECRET: ${UNTHAA_AUTH_GOOGLE_CLIENT_SECRET}
